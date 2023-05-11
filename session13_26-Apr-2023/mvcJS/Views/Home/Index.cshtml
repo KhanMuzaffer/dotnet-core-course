@@ -23,8 +23,10 @@
                 </tr>
             </thead>
             <tbody id="employeeList">
-                @if(Model.Count() > 0) {
-                    foreach(Employee e in Model) {
+                @if (Model.Count() > 0)
+                {
+                    foreach (Employee e in Model)
+                    {
                         <tr id="@e.Id">
                             <td>@e.Id</td>
                             <td>@e.Name</td>
@@ -38,8 +40,10 @@
                             </td>
                         </tr>
                     }
-                } else {
-                    <tr class="d-flex justify-content-left">
+                }
+                else
+                {
+                    <tr class="d-flex justify-content-left" id="noData">
                         <td class=" m-2 badge bg-danger" colspan="4">no data found</td>
                     </tr>
                 }
@@ -49,74 +53,79 @@
 </div>
 
 <partial name="Partials/_EmployeeForm" />
-@Html.Partial("~/Views/Shared/Partials/_ConfirmDialog.cshtml");
+@Html.Partial("~/Views/Shared/Partials/_ConfirmDialog.cshtml")
 @* <partial name="/Views/Shared/Partials/_ConfirmDialog" /> *@
 
-
 @section Scripts {
-<script>
-  function AddEmployee(e) {
-    e.preventDefault();
+    <script>
+        $(document).ready(function () {
+            if (@Model.Count() <= 0)
+                $("#noData").hide();
+        });
 
-    //var formEl = document.forms.employeeForm;
-    var formData = new FormData(e.target);
-    //axios
-    fetch("Home/AddEmployee", {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(result => {
-
-        //console.log(Object.entries(result));
-
-        //let empItem = ["id", 12];
-        //let [id, value] = empItem; //array destructuring
-
-        /*
-        //FirstWay: Adding new row to a table
-        let newRow  = "<tr>"
-        for(let [key, value] of Object.entries(result)) {
-            newRow += `<td id='${key}' class='${key}'>${value}</td>`
+        function AddEmployee(e) {
+            debugger;
+            e.preventDefault();
+            //var formEl = document.forms.employeeForm;
+            var formData = new FormData(e.target);
+            //axios
+            fetch("Home/AddEmployee", {
+                method: "POST",
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(Object.entries(result));
+                    //let empItem = ["id", 12];
+                    //let [id, value] = empItem; //array destructuring
+                    /*
+                    //FirstWay: Adding new row to a table
+                    let newRow  = "<tr>"
+                    for(let [key, value] of Object.entries(result)) {
+                        newRow += `<td id='${key}' class='${key}'>${value}</td>`
+                    }
+                    newRow += "</tr>"
+                    */
+                    /*
+                    //Add result to table
+                    const employeeList = document.getElementById("employeeList");
+                    let newRowString = `<tr>
+                        <td>${result.id}</td>
+                        <td>${result.name}</td>
+                        <td>${result.phone}</td>
+                        <td>${result.email}</td>
+                    </tr>`;
+                    employeeList.innerHTML += newRowString;
+                    */
+                    //Third way of adding row to a table
+                    const table = document.getElementById("empTable");
+                    if (table.rows.length > 0) {
+                        $("#noData").hide();
+                        let newRow = table.insertRow(table.rows.length);//Inserting a new row at the end of the table
+                        newRow.insertCell(0).innerText = result.id; //Inserting a value in the first cell of a table
+                        newRow.insertCell(1).innerText = result.name;
+                        newRow.insertCell(2).innerText = result.phone;
+                        newRow.insertCell(3).innerText = result.email;
+                        // Add Edit and Delete buttons
+                        let actionCell = newRow.insertCell(4);
+                        let editButton = `<button onclick="EditEmployee(this)" data-item="${result.id}" class="btn btn-warning">Edit</button>`;
+                        let deleteButton = `<button onclick="DeleteEmployee(this)" data-id="${result.id}" class="btn btn-danger">Delete</button>`;
+                        actionCell.innerHTML = `<div>${editButton} ${deleteButton}</div>`
+                    }
+                    else {
+                        $("#noData").show();
+                    }
+                    e.target.reset();
+                    //Second way of adding row to a table
+                    var myModalEl = document.getElementById('EmployeeForm');
+                    var modal = bootstrap.Modal.getInstance(myModalEl)
+                    modal.hide();
+                })
+                .catch(error => {
+                    alert("An error occured");
+                    console.error("Error has occured: ", error)
+                });
         }
-        newRow += "</tr>"
-        */
-
-        /*
-        
-
-        //Add result to table
-        const employeeList = document.getElementById("employeeList");
-        let newRowString = `<tr>
-            <td>${result.id}</td>
-            <td>${result.name}</td>
-            <td>${result.phone}</td>
-            <td>${result.email}</td>
-        </tr>`;
-        employeeList.innerHTML += newRowString;
-        */
-
-        
-        //Third way of adding row to a table
-        const table = document.getElementById("empTable");
-        let newRow = table.insertRow(table.rows.length);    //Inserting a new row at the end of the table
-        newRow.insertCell(0).innerText = result.id; //Inserting a value in the first cell of a table
-        newRow.insertCell(1).innerText = result.name;
-        newRow.insertCell(2).innerText = result.phone;
-        newRow.insertCell(3).innerText = result.email;
-        e.target.reset();
-        
-        //Second way of adding row to a table
-        var myModalEl = document.getElementById('EmployeeForm');
-        var modal = bootstrap.Modal.getInstance(myModalEl)
-        modal.hide();
-    })
-    .catch(error => {
-        alert("An error occured");
-        console.error("Error has occured: ", error)
-    });
-    }
-
-    document.getElementById("employeeForm").addEventListener('submit', AddEmployee);
-</script>
+        document.getElementById("employeeForm").addEventListener('submit', AddEmployee);
+    </script>
 }

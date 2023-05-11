@@ -11,8 +11,8 @@ using mvcJS.Models;
 namespace mvcJS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230417091134_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230427043634_initialmigr")]
+    partial class initialmigr
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,7 @@ namespace mvcJS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employee");
+                    b.ToTable("Employees");
                 });
 #pragma warning restore 612, 618
         }

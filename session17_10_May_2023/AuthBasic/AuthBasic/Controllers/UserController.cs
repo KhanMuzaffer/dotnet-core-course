@@ -35,13 +35,20 @@ namespace AuthBasic.Controllers
             return View();
         }
 
-        //=> Ok("Login Successful");
-
         [HttpPost]
         public async Task<IActionResult> Register(UserVM model)
         {
-            bool result = await _repository.Register(model);
-            if (result)
+            var result = await CheckEmail(model.Email) as JsonResult;
+            bool emailAvailable = (bool)result.Value;
+
+            if (emailAvailable)
+            {
+                TempData["error"] = "Email already exists in database!";
+                return View();
+            }
+
+            bool registerResult = await _repository.Register(model);
+            if (registerResult)
             {
                 TempData["result"] = "Register successful!";
                 return RedirectToAction(nameof(Login));
@@ -49,9 +56,27 @@ namespace AuthBasic.Controllers
             TempData["error"] = "Register failed!";
             return View();
         }
-        public IActionResult LogOut() {
+
+
+        public IActionResult LogOut()
+        {
             _httpContext.HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            bool result = await _repository.IsEmailAvailable(email);
+            if (result)
+            {
+                return Ok(true);
+            }
+            else
+            {
+                return Ok(false);
+            }
+        }
+
     }
 }

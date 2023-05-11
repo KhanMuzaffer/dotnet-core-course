@@ -26,8 +26,12 @@
                     <span class="text-danger" asp-validation-for=Name></span>
                 </div>
                 <div class="form-group my-2">
-                    <input asp-for=Email type="text" class="form-control" placeholder="Email">
-                    <span class="text-danger" asp-validation-for=Email></span>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="Email" onblur="checkEmail()">
+                    <span class="text-danger" asp-validation-for="Email"></span>
+                    <span class="text-danger" id="Email-error"></span>
+
+                   @* <input asp-for=Email type="text" class="form-control" placeholder="Email">
+                    <span class="text-danger" asp-validation-for=Email></span>*@
                 </div>
                 <div class="form-group my-2">
                     <input asp-for=Username type="text" class="form-control" placeholder="Username">
@@ -51,4 +55,26 @@
     @{
         await Html.RenderPartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml");
     }
+    <script>
+        function checkEmail() {
+            let email = document.getElementById('Email').value;
+            if (email !== '') {
+                $.ajax({
+                    type: "GET",
+                    url: "/User/CheckEmail",
+                    data: { email: email },
+                    success: function (response) {
+                        if (response === true) {
+                            // Display error message
+                            document.getElementById('Email-error').innerHTML = 'Email already registered.';
+                        } else {
+                            // Clear error message
+                            document.getElementById('Email-error').innerHTML = '';
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
 }

@@ -1,10 +1,11 @@
 ﻿function DeleteEmployee(target) {
+    debugger;
   let id = target.getAttribute("data-id");
 
   // var myModalEl = document.getElementById('confirmDialog');
   // var modal = bootstrap.Modal.getInstance(myModalEl)
 
-  let modal = new bootstrap.Modal(document.getElementById('confirmDialog'))
+    let modal = new bootstrap.Modal(document.getElementById('confirmDialog'));
   modal.show();
 
   document.getElementById("confirmDelete").addEventListener('click', () => {

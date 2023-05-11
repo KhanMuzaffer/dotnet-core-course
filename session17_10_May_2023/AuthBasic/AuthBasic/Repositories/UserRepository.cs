@@ -19,6 +19,7 @@ namespace AuthBasic.Repositories
             this._httpContext = httpContext;
         }
 
+     
         public async Task<bool> Login(LoginVM model)
         {
             try
@@ -50,7 +51,6 @@ namespace AuthBasic.Repositories
         {
             User newUser = new();
             UserVM.MapUserVMToEntity(model, newUser);
-
             try
             {
                 newUser.Password = Encrypt.EncryptPassword(newUser.Password);
@@ -64,6 +64,18 @@ namespace AuthBasic.Repositories
                 _logger.LogError(ex.ToString());
 
                 return false;
+            }
+        }
+        public async Task<bool> IsEmailAvailable(string email)
+        {
+            if (email == null)
+            {
+                return false;
+            }
+            else
+            {
+                bool result = await _context.Users.AnyAsync(u => u.Email == email);
+                return result;
             }
         }
     }
